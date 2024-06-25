@@ -21,14 +21,24 @@ const getBody = (req, callback) => {
 };
 
 // here, you could declare one or more variables to store what comes back from the form.
-let item = "Enter something below.";
+let item = "Guess the number!";
+let result = "The result is random color";
+let colors = ["Pink", "Orange", "Gray", "Purple", "Blue", "Brown", "Black"];
+
+const randomColor = (arr) => {
+  let colorid = Math.floor(Math.random()*arr.length);
+  return arr[colorid];
+}
+let number = Math.floor(Math.random()*100);
+console.log("Generated number is ", number);
+let pColor = randomColor(colors);
 
 // here, you can change the form below to modify the input fields and what is displayed.
 // This is just ordinary html with string interpolation.
 const form = () => {
   return `
   <body>
-  <p>${item}</p>
+  <p style="color:${pColor};">${item}</p>
   <form method="POST">
   <input name="item"></input>
   <button type="submit">Submit</button>
@@ -36,6 +46,7 @@ const form = () => {
   </body>
   `;
 };
+
 
 const server = http.createServer((req, res) => {
   console.log("req.method is ", req.method);
@@ -50,6 +61,17 @@ const server = http.createServer((req, res) => {
         item = "Nothing was entered.";
       }
       // Your code changes would end here
+
+      if (body["item"] > number) {
+        item = " Well, it's more than required";
+        pColor = "Red";
+      } else if (body["item"]<number) {
+        item = "Oups, it's less than required";
+        pColor = "Red";
+      } else {
+        item = "It's a match!";
+        pColor = "Blue";
+      }
       res.writeHead(303, {
         Location: "/",
       });
