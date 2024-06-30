@@ -69,7 +69,7 @@ const server = http.createServer((req, res) => {
         item = "Oups, it's less than required";
         pColor = "Red";
       } else {
-        item = "It's a match!";
+        item = "It's a match!!!";
         pColor = "Blue";
       }
       res.writeHead(303, {
@@ -81,6 +81,10 @@ const server = http.createServer((req, res) => {
     res.end(form());
   }
 });
+// #3 week2 assignment
+server.on("request", (req) => {  
+  console.log("event received: ", req.method, req.url);  
+});  
 
 server.listen(3000);
 console.log("The server is listening on port 3000.");
