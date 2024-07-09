@@ -7,7 +7,7 @@
 
 //require
 const {createReadStream} = require('fs');
-const stream = createReadStream('../content/big.txt', {highWaterMark: 2048, encoding : 'utf-8'});
+const stream = createReadStream('../content/big.txt', {highWaterMark: 200, encoding : 'utf-8'});
 let counter = 0;
 
 //data
@@ -17,7 +17,7 @@ stream.on("data", (result) => {
 })
 
 //end
-stream.on("close", () => {
+stream.on("end", () => {
     console.log(`The number of chunks is ${counter}`);
 })
 
