@@ -1,103 +1,29 @@
 const express = require('express');
-const path = require('path');
 const app = express();
-const { products } = require('./data.js');
+const peopleRouter = require('./routes/people');
+const authRouter = require('./routes/auth');
 
-app.use(express.static("./public"));
+//middleware
+const logger = (req, res, next) => {
+    const method = req.method;
+    const url = req.url;
+    const time = new Date().getFullYear();
+    console.log(`user requested ${url} via methond ${method} in ${time} year.`);
+    next();
+}
 
-// app.get('/', (req, res) => {
-//    res.status(200).sendFile(__dirname, "./public/index.html");
-// })
+app.use([logger, express.static('./methods-public'), express.urlencoded({extended:false}), express.json()]);
 
-app.get('/api/v1/test', (req, res) => {
-    res.status(200).json({ message: "It worked!" });
+app.use('/api/v1/people', peopleRouter);
+app.use('/login', authRouter);
+
+// //APIs
+app.get("/about", (req, res) => {
+    res.send("About page");
 })
+//html form post
 
-app.get('/api/v1/products', (req, res) => {
-    res.status(200).json(products);
-    // const newProducts = products.map((product) => {
-    //     const {id, name, image} = product;
-    //     return {id, name, image};
-    // })
-    // console.log(newProducts);
-})
-
-app.get('/api/v1/products/:productID', (req, res) => {
-    // console.log(req.params);
-    const idToFind = parseInt(req.params.productID); 
-    const product = products.find((p) => p.id === idToFind);
-    // res.json(req.params);
-    //    console.log(product);
-//    console.log(typeof(product));
-//task #1
-    if (product) {
-        res.status(200).json(product);
-    } else {
-        res.status(404).json({ message: "That product was not found."});
-    }
-})
-
-//task #2
-app.get('/api/v1/query', (req, res) => {
-    // res.send(req.query);
-    //{"search":"al","limit":"5."}
-    const {search, limit, cost} = req.query;
-    let sortedProducts = [...products];
-    //res.send(`${search} ksdhflsdhflkasdjhf ${limit}`);
-
-    if (search) {
-        sortedProducts = sortedProducts.filter((product) => {
-            return product.name.startsWith(search);
-        })
-    }
-
-    if (limit) {
-        sortedProducts = sortedProducts.slice(0, Number(limit));
-    }
-//task #3
-    if (cost) {
-        sortedProducts = sortedProducts.filter((product) => {
-            return product.price > cost;
-        })
-    }
-
-    res.json(sortedProducts);
-})
-
-
-
-
-app.all('*', (req, res) => {
-    res.status(404).send('<h2> Resource not found...Sorry cehck the URL');
-})
 
 app.listen(3000, () => {
     console.log('listening on port 3000...');
 })
-
-// console.log('Express Tutorial')
-// const http = require('http');
-// const {readFileSync} = require('fs');
-
-// const homePage = readFileSync('./public/index.html');
-
-// const server = http.createServer((req, res) => {
-//     const url = req.url;
-
-//     if (url === '/') {
-//         res.writeHead(200, {'content-type' : 'text/html'});
-//         res.write(homePage);
-//         res.end();
-//     } else if (url === '/about') {
-//         res.writeHead(200, {'content-type' : 'text/html'});
-//         res.write('<h3>About page</h3>');
-//         res.end();
-//     } else {
-//         res.writeHead(404, {'content-type' : 'text/html'});
-//         res.write('<h1>Page not found</h1>');
-//         res.end();
-//     }
-//     //console.log(`wtf is ${req.pipe}`);
-// })
-
-// server.listen(3000);
