@@ -16,7 +16,7 @@ router.post("/", (req, res) => {
     addPerson(req, res);
 })
 //put
-router.post("/:id", (req, res) => {
+router.put("/:id", (req, res) => {
     updatePerson(req, res, req.params.id);
 })
 
