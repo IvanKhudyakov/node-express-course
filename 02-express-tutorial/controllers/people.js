@@ -10,7 +10,8 @@ const addPerson = (req, res) => {
     console.log("After: ", people);
 } 
 
-const updatePerson = (req, res, id) => {
+const updatePerson = (req, res) => {
+    const {id} = req.params;
     const {name} = req.body;
     const person = people.find((person) => person.id === Number(id));
 
@@ -30,7 +31,8 @@ const updatePerson = (req, res, id) => {
     res.status(200).json({ success: true, data: newPeople});
 } 
 
-const deletePerson = (req, res, id) => {
+const deletePerson = (req, res) => {
+    const {id} = req.params;
     const person = people.find((person) => person.id === Number(id));
     
     if (!person) {
@@ -50,7 +52,8 @@ const deletePerson = (req, res, id) => {
 
 } 
 
-const getPerson = (req, res, id) => {
+const getPerson = (req, res) => {
+    const {id} = req.params;
     console.log(id);
     const person = people.find((person) => person.id === Number(id));
 
