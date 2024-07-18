@@ -1,103 +1,73 @@
 const express = require('express');
-const path = require('path');
 const app = express();
-const { products } = require('./data.js');
+const peopleRouter = require('./routes/people');
+const authRouter = require('./routes/auth');
+const cookieParser = require('cookie-parser');
 
-app.use(express.static("./public"));
+//middleware
+const logger = (req, res, next) => {
+    const method = req.method;
+    const url = req.url;
+    const time = new Date().getFullYear();
+    console.log(`user requested ${url} via methond ${method} in ${time} year.`);
+    next();
+}
 
-// app.get('/', (req, res) => {
-//    res.status(200).sendFile(__dirname, "./public/index.html");
-// })
+app.use(logger);
+app.use(express.static('./methods-public'));
+app.use(express.urlencoded({extended:false}));
+app.use(express.json());
+app.use(cookieParser());
 
-app.get('/api/v1/test', (req, res) => {
-    res.status(200).json({ message: "It worked!" });
-})
+app.use('/api/v1/people', peopleRouter);
+app.use('/login', authRouter);
 
-app.get('/api/v1/products', (req, res) => {
-    res.status(200).json(products);
-    // const newProducts = products.map((product) => {
-    //     const {id, name, image} = product;
-    //     return {id, name, image};
-    // })
-    // console.log(newProducts);
-})
-
-app.get('/api/v1/products/:productID', (req, res) => {
-    // console.log(req.params);
-    const idToFind = parseInt(req.params.productID); 
-    const product = products.find((p) => p.id === idToFind);
-    // res.json(req.params);
-    //    console.log(product);
-//    console.log(typeof(product));
-//task #1
-    if (product) {
-        res.status(200).json(product);
-    } else {
-        res.status(404).json({ message: "That product was not found."});
-    }
-})
-
-//task #2
-app.get('/api/v1/query', (req, res) => {
-    // res.send(req.query);
-    //{"search":"al","limit":"5."}
-    const {search, limit, cost} = req.query;
-    let sortedProducts = [...products];
-    //res.send(`${search} ksdhflsdhflkasdjhf ${limit}`);
-
-    if (search) {
-        sortedProducts = sortedProducts.filter((product) => {
-            return product.name.startsWith(search);
-        })
-    }
-
-    if (limit) {
-        sortedProducts = sortedProducts.slice(0, Number(limit));
-    }
-//task #3
-    if (cost) {
-        sortedProducts = sortedProducts.filter((product) => {
-            return product.price > cost;
-        })
-    }
-
-    res.json(sortedProducts);
+//APIs
+app.get("/about", (req, res) => {
+    res.send("About page");
 })
 
 
 
+//Optional Additional Assignment
+//Now write a middleware function called auth. This checks for req.cookies.name. If that cookie is present, it sets req.user to the value, and calls next. 
+//If it is absent, it sets the res status to 401 (which means unauthorized), and returns a message in a JSON object that says “unauthorized”. It does not call next() in this case.  
+const auth = (req, res, next) => {
+    const userName = req.cookies.name;
+    if (!userName) {
+        return res.status(401).json({success: false, msg: "You're unauthorized to access!"});
+    }
+    req.user = userName;
+    next();
+}
 
-app.all('*', (req, res) => {
-    res.status(404).send('<h2> Resource not found...Sorry cehck the URL');
+//Now add an app.post("/logon"), which should require a name in the body. 
+//If it is present, it should do a res.cookie("name", req.body.name), and send back a 201 result code plus a message that says hello to the user. 
+//If name is not present, it should return a 400 and an error message in JSON. 
+app.post("/logon", (req,res) => {
+    const {name} = req.body;
+    if (!name) {
+        return res.status(400).json({success: false, msg: "Name has not been provided!"});
+    }
+    res.cookie("name", name);
+    res.status(201).json({success: true, data: `User ${name} is authorized! Welcome!`});
+})
+
+//Now add an app.delete("/logoff"). This should do a res.clearCookie("name"), and then it should return a 200, with a message in JSON that the user is logged off. 
+app.delete("/logoff", (req, res) => {
+    const {name} = req.cookies;
+    res.clearCookie("name");
+    res.status(200).json({success: true, data: `User ${name} is logged off!`});
+})
+
+//Now add an app.get("/test"). The auth middleware should be invoked in this app.get statement. 
+//The get should just return a 200, plus a message in JSON that says welcome to the user, whose name is in req.user.
+app.get("/test", auth, (req, res) => {
+    const username = req.user;
+    console.log("I'm in test");
+    res.status(200).json({success:true, data:`Welcome user ${username}`});
 })
 
 app.listen(3000, () => {
     console.log('listening on port 3000...');
 })
-
-// console.log('Express Tutorial')
-// const http = require('http');
-// const {readFileSync} = require('fs');
-
-// const homePage = readFileSync('./public/index.html');
-
-// const server = http.createServer((req, res) => {
-//     const url = req.url;
-
-//     if (url === '/') {
-//         res.writeHead(200, {'content-type' : 'text/html'});
-//         res.write(homePage);
-//         res.end();
-//     } else if (url === '/about') {
-//         res.writeHead(200, {'content-type' : 'text/html'});
-//         res.write('<h3>About page</h3>');
-//         res.end();
-//     } else {
-//         res.writeHead(404, {'content-type' : 'text/html'});
-//         res.write('<h1>Page not found</h1>');
-//         res.end();
-//     }
-//     //console.log(`wtf is ${req.pipe}`);
-// })
-
-// server.listen(3000);
