@@ -154,6 +154,87 @@ const names = [
   'Amy You'
 ];
 
+// - Create a new array with only each person's last name
+const challengeLastNames = names.map((fullName) => {
+    //console.log(`Full name is ${fullName}`);
+    let name = fullName.split(" ");
+    //console.log(name[name.length-1]);
+    return name[name.length-1];
+})
+
+console.log('Array with only last names:', challengeLastNames);
+
+// - Filter names that don't match the format "<first> <last>"
+const challengeFilterNames = names.filter((fullName) => {
+  const regex = /^[A-Za-z]+ [A-Za-z]+$/;
+  //console.log(`Full name is ${fullName}`);
+  return fullName.match(regex);
+})
+
+console.log('Array with filtered names:', challengeFilterNames);
+
+// - Create a new array where everyone's name is converted to "Title Case"
+const challengeConvertNames = names.map((fullName) => {
+  let name = fullName.split(" ");
+
+  const convertedName = name.map((element) => {
+      //   console.log("Initial Element: ", element, " AFTER convertion", element.charAt(0).toUpperCase() + element.slice(1))
+      const wordletters = element.split("");
+      wordletters.map((letter, index)=>{
+        if (index === 0) {
+          letter.toUpperCase();
+        } else {
+          letter.toLowerCase();
+        }
+      }).join("");
+      return wordletters
+  })
+  return convertedName.join(" ");
+})
+
+ console.log('Array with converted names:', challengeConvertNames);
+
+// - Last Challenge:
+//     Remove names with the wrong format
+//     AND change it to "Title Case"
+//     AND remove people whose last name ends with z
+//     AND write a message asking them to sign up
+
+  //////// CHALLENGE: Remove names with the wrong format
+  const correctFormat = /^[A-Za-z]+ [A-Za-z]+$/;
+  
+  const challengeLast = names
+  .filter((fullName) => {  
+      return fullName.match(correctFormat);
+    })
+    //                  AND change it to "Title Case"
+    .map((fullName) => {
+        let name = fullName.split(" ");
+      
+        const convertedName = name.map((element) => {
+            //   console.log("Initial Element: ", element, " AFTER convertion", element.charAt(0).toUpperCase() + element.slice(1))
+            const wordletters = element.split("");
+            const updatedName = wordletters.map((letter, index)=>{
+              if (index === 0) {
+                return letter.toUpperCase();
+              } else {
+                return letter.toLowerCase();
+              }
+            }).join("");
+            return updatedName;
+        })
+        return convertedName.join(" ");
+      })
+    //                  AND remove people whose last name ends with z
+    .filter((name) =>{
+        const lastLetter = name.charAt(name.length-1);
+        return lastLetter !== 'z';
+    })
+    //                  AND write a message asking them to sign up
+    .map((name)=>{
+      console.log(`Dear ${name} please sign up!`);
+    })
+
 ///////////////////////////////////////////////////////////////////////////////
 //// put your answers above if you wish to do the challenges on your own //////
 ///////////////////////////////////////////////////////////////////////////////
