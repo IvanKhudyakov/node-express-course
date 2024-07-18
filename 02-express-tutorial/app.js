@@ -13,7 +13,10 @@ const logger = (req, res, next) => {
     next();
 }
 
-app.use([logger, express.static('./methods-public'), express.urlencoded({extended:false}), express.json()]);
+app.use(logger);
+app.use(express.static('./methods-public'));
+app.use(express.urlencoded({extended:false}));
+app.use(express.json());
 app.use(cookieParser());
 
 app.use('/api/v1/people', peopleRouter);
