@@ -17,3 +17,7 @@ const getTask = asyncWrapper(async (req, res, next) => {
 
 As you will see in the lessons that follow, you do not have to always create the asyncWrapper middleware, because you can instead use an NPM package called express-async-errors that provides the same capability.
 
+COMMENTS FROM REVIEWER from week5:
+Also, I'd like to hear about your experience using Postman. 
+
+I have an experience with Postman and nothing so far looks rocket-science for me. However, I know there are a way more functionality of Postman that we haven't yet tried and i'm looking forward to learn something new and advanced about Postman.
